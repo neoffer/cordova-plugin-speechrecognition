@@ -140,7 +140,6 @@
 
                 self.recognitionRequest = nil;
                 self.recognitionTask = nil;
-                [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
             }
         }];
 
