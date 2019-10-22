@@ -92,7 +92,7 @@
         AVAudioFormat *format = [inputNode outputFormatForBus:0];
 
         self.recognitionTask = [self.speechRecognizer recognitionTaskWithRequest:self.recognitionRequest resultHandler:^(SFSpeechRecognitionResult *result, NSError *error) {
-
+            [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
             if ( result ) {
 
                 NSMutableArray *resultArray = [[NSMutableArray alloc] init];
