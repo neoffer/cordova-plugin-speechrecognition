@@ -105,10 +105,12 @@
                     [timer invalidate];
                     timer = nil;
                 }
+                NSArray *timerParams;
+                timerParams =  [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, nil]
                 timer = [NSTimer scheduledTimerWithTimeInterval:2.0 
                               target:self 
                               selector:@selector(handleTimer:) 
-                              userInfo:result.bestTranscription.formattedString repeats:NO];
+                              userInfo:timerParams repeats:NO];
                 NSArray *transcriptions = [NSArray arrayWithArray:resultArray];
 
                 NSLog(@"startListening() recognitionTask best result in array: %@", transcriptions.description);
@@ -159,7 +161,8 @@
 }
 - (void)handleTimer:(NSTimer*)theTimer {
         NSMutableArray *resultArray = [[NSMutableArray alloc] init];
-        [resultArray addObject:(NSString*)[theTimer userInfo]];
+        NSArray *timerParams = (NSArray*)[theTimer userInfo]
+        [resultArray addObject:[timerParams objectAtIndex: 0]];
         [resultArray addObject:@"final"];
         
         NSArray *transcriptions = [NSArray arrayWithArray:resultArray];
@@ -168,7 +171,7 @@
         
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:transcriptions];
         
-        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:[timerParams objectAtIndex: 1]];
 
         [self.audioEngine stop];
         [self.audioEngine.inputNode removeTapOnBus:0];
