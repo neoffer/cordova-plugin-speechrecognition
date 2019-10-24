@@ -9,5 +9,5 @@
 - (void)getSupportedLanguages:(CDVInvokedUrlCommand*)command;
 - (void)hasPermission:(CDVInvokedUrlCommand*)command;
 - (void)requestPermission:(CDVInvokedUrlCommand*)command;
-
+- (void)handleTimer:(NSTimer*)theTimer;
 @end

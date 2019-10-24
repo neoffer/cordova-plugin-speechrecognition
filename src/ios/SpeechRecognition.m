@@ -176,6 +176,7 @@
         self.recognitionRequest = nil;
         self.recognitionTask = nil;
 }
+
 - (void)stopListening:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSLog(@"stopListening()");
