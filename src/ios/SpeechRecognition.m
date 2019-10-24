@@ -96,9 +96,9 @@
             if ( result ) {
 
                 NSMutableArray *resultArray = [[NSMutableArray alloc] init];
-                [resultArray addObject:result.bestTranscription.formattedString]
+                [resultArray addObject:result.bestTranscription.formattedString];
                 if (!result.isFinal) {
-                    [resultArray addObject:"..."]
+                    [resultArray addObject:@"..."];
                 }
                 /*int counter = 0;
                 for ( SFTranscription *transcription in result.transcriptions ) {
