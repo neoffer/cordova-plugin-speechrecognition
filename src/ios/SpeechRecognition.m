@@ -111,7 +111,7 @@
                 }
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 NSTimer* timer;
-                NSArray *timerParams = [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, nil];
+                NSArray *timerParams = [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, audioSession, nil];
                 timer = [NSTimer scheduledTimerWithTimeInterval:2.0 
                               target:self 
                               selector:@selector(handleTimer:) 
@@ -121,7 +121,7 @@
 
             if ( error ) {
                 NSLog(@"startListening() recognitionTask error: %@", error.description);
-
+                [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
                 [self.audioEngine stop];
                 [self.audioEngine.inputNode removeTapOnBus:0];
 
@@ -162,9 +162,10 @@
     {
         [self.timerCount removeObjectAtIndex:0];
     } else {
-        [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
         NSMutableArray *resultArray = [[NSMutableArray alloc] init];
         NSArray *timerParams = (NSArray*)[theTimer userInfo];
+        AVAudioSession *audioSession = (AVAudioSession*)[timerParams objectAtIndex: 2];
+        [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
         [resultArray addObject:[timerParams objectAtIndex: 0]];
         [resultArray addObject:@"final"];
         
