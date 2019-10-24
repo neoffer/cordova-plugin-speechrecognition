@@ -117,7 +117,7 @@
                               target:self 
                               selector:@selector(handleTimer:) 
                               userInfo:timerParams repeats:NO];
-                [self.timerCount addObject:timerParams];
+                [self.timerCount addObject:@"timer"];
             }
 
             if ( error ) {
@@ -174,12 +174,13 @@
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:transcriptions];
         
         [self.commandDelegate sendPluginResult:pluginResult callbackId:[timerParams objectAtIndex: 1]];
+        /*if ( self.audioEngine.isRunning ) {
+            [self.audioEngine stop];
+            [self.audioEngine.inputNode removeTapOnBus:0];
 
-        [self.audioEngine stop];
-        [self.audioEngine.inputNode removeTapOnBus:0];
-
-        self.recognitionRequest = nil;
-        self.recognitionTask = nil;
+            self.recognitionRequest = nil;
+            self.recognitionTask = nil;
+        }*/
     }
 }
 
