@@ -23,6 +23,7 @@
 @property (strong, nonatomic) AVAudioEngine *audioEngine;
 @property (strong, nonatomic) SFSpeechAudioBufferRecognitionRequest *recognitionRequest;
 @property (strong, nonatomic) SFSpeechRecognitionTask *recognitionTask;
+@property (strong, nonatomic) NSMutableArray *timerCount;
 
 @end
 
@@ -47,7 +48,7 @@
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
         return;
     }
-
+    self.timerCount = [[NSMutableArray alloc] init];
     NSLog(@"startListening()");
 
     SFSpeechRecognizerAuthorizationStatus status = [SFSpeechRecognizer authorizationStatus];
@@ -90,27 +91,17 @@
 
         AVAudioInputNode *inputNode = self.audioEngine.inputNode;
         AVAudioFormat *format = [inputNode outputFormatForBus:0];
-
+  
         self.recognitionTask = [self.speechRecognizer recognitionTaskWithRequest:self.recognitionRequest resultHandler:^(SFSpeechRecognitionResult *result, NSError *error) {
             //[audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
             if ( result ) {
-
+                
                 NSMutableArray *resultArray = [[NSMutableArray alloc] init];
                 [resultArray addObject:result.bestTranscription.formattedString];
                 if ( result.isFinal ) {
                     [resultArray addObject:@"final"];
                 }
-                NSTimer* timer;
-                if (timer != nil) {
-                    [timer invalidate];
-                    timer = nil;
-                }
-                NSArray *timerParams;
-                timerParams =  [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, nil];
-                timer = [NSTimer scheduledTimerWithTimeInterval:2.0 
-                              target:self 
-                              selector:@selector(handleTimer:) 
-                              userInfo:timerParams repeats:NO];
+                
                 NSArray *transcriptions = [NSArray arrayWithArray:resultArray];
 
                 NSLog(@"startListening() recognitionTask best result in array: %@", transcriptions.description);
@@ -120,6 +111,13 @@
                     [pluginResult setKeepCallbackAsBool:YES];
                 }
                 [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+                NSTimer* timer;
+                NSArray *timerParams = [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, nil];
+                timer = [NSTimer scheduledTimerWithTimeInterval:2.0 
+                              target:self 
+                              selector:@selector(handleTimer:) 
+                              userInfo:timerParams repeats:NO];
+                [self.timerCount addObject:timerParams];
             }
 
             if ( error ) {
@@ -160,6 +158,10 @@
 
 }
 - (void)handleTimer:(NSTimer*)theTimer {
+    if ([self.timerCount count] > 1)
+    {
+        [self.timerCount removeObjectAtIndex:0];
+    } else {
         NSMutableArray *resultArray = [[NSMutableArray alloc] init];
         NSArray *timerParams = (NSArray*)[theTimer userInfo];
         [resultArray addObject:[timerParams objectAtIndex: 0]];
@@ -178,6 +180,7 @@
 
         self.recognitionRequest = nil;
         self.recognitionTask = nil;
+    }
 }
 
 - (void)stopListening:(CDVInvokedUrlCommand*)command {
