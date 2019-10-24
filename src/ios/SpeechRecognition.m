@@ -81,7 +81,7 @@
         }
 
         AVAudioSession *audioSession = [AVAudioSession sharedInstance];
-        [audioSession setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
+        [audioSession setCategory:AVAudioSessionCategoryRecord withOptions:AVAudioSessionCategoryOptionDefaultToSpeaker error:nil];
         [audioSession setMode:AVAudioSessionModeMeasurement error:nil];
         [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
 
@@ -92,12 +92,23 @@
         AVAudioFormat *format = [inputNode outputFormatForBus:0];
 
         self.recognitionTask = [self.speechRecognizer recognitionTaskWithRequest:self.recognitionRequest resultHandler:^(SFSpeechRecognitionResult *result, NSError *error) {
-            [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
+            //[audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
             if ( result ) {
 
                 NSMutableArray *resultArray = [[NSMutableArray alloc] init];
                 [resultArray addObject:result.bestTranscription.formattedString];
-
+                if ( result.isFinal ) {
+                    [resultArray addObject:@"final"];
+                }
+                NSTimer* timer;
+                if (timer != nil) {
+                    [timer invalidate];
+                    timer = nil;
+                }
+                timer = [NSTimer scheduledTimerWithTimeInterval:2.0 
+                              target:self 
+                              selector:@selector(handleTimer:) 
+                              userInfo:result.bestTranscription.formattedString repeats:NO];
                 NSArray *transcriptions = [NSArray arrayWithArray:resultArray];
 
                 NSLog(@"startListening() recognitionTask best result in array: %@", transcriptions.description);
@@ -146,7 +157,27 @@
     }];
 
 }
+- (void)handleTimer:(NSTimer*)theTimer {
+        NSMutableArray *resultArray = [[NSMutableArray alloc] init];
+        [resultArray addObject:(NSString*)[theTimer userInfo]];
+        [resultArray addObject:@"final"];
+        
+        NSArray *transcriptions = [NSArray arrayWithArray:resultArray];
 
+        NSLog(@"startListening() handleTimer best result in array: %@", transcriptions.description);
+        
+        CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:transcriptions];
+        if (showPartial){
+            [pluginResult setKeepCallbackAsBool:YES];
+        }
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+
+        [self.audioEngine stop];
+        [self.audioEngine.inputNode removeTapOnBus:0];
+
+        self.recognitionRequest = nil;
+        self.recognitionTask = nil;
+}
 - (void)stopListening:(CDVInvokedUrlCommand*)command {
     [self.commandDelegate runInBackground:^{
         NSLog(@"stopListening()");
