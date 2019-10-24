@@ -167,9 +167,7 @@
         NSLog(@"startListening() handleTimer best result in array: %@", transcriptions.description);
         
         CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:transcriptions];
-        if (showPartial){
-            [pluginResult setKeepCallbackAsBool:YES];
-        }
+        
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 
         [self.audioEngine stop];
