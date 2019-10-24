@@ -97,6 +97,9 @@
 
                 NSMutableArray *resultArray = [[NSMutableArray alloc] init];
                 [resultArray addObject:result.bestTranscription.formattedString]
+                if (!result.isFinal) {
+                    [resultArray addObject:"..."]
+                }
                 /*int counter = 0;
                 for ( SFTranscription *transcription in result.transcriptions ) {
                     if (matches > 0 && counter < matches) {
@@ -115,7 +118,7 @@
                     }
                     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
                 } else {
-                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_NO_RESULT messageAsArray:transcriptions];
+                    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:transcriptions];
                     if (showPartial){
                         [pluginResult setKeepCallbackAsBool:YES];
                     }
