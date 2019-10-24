@@ -106,7 +106,7 @@
                     timer = nil;
                 }
                 NSArray *timerParams;
-                timerParams =  [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, nil]
+                timerParams =  [NSArray arrayWithObjects: result.bestTranscription.formattedString, command.callbackId, nil];
                 timer = [NSTimer scheduledTimerWithTimeInterval:2.0 
                               target:self 
                               selector:@selector(handleTimer:) 
@@ -161,7 +161,7 @@
 }
 - (void)handleTimer:(NSTimer*)theTimer {
         NSMutableArray *resultArray = [[NSMutableArray alloc] init];
-        NSArray *timerParams = (NSArray*)[theTimer userInfo]
+        NSArray *timerParams = (NSArray*)[theTimer userInfo];
         [resultArray addObject:[timerParams objectAtIndex: 0]];
         [resultArray addObject:@"final"];
         
