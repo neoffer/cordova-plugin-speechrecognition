@@ -68,7 +68,7 @@
         }
 
         NSString* language = [command argumentAtIndex:0 withDefault:DEFAULT_LANGUAGE];
-        int matches = [[command argumentAtIndex:1 withDefault:@(DEFAULT_MATCHES)] intValue];
+        // int matches = [[command argumentAtIndex:1 withDefault:@(DEFAULT_MATCHES)] intValue];
         BOOL showPartial = [[command argumentAtIndex:3 withDefault:@(NO)] boolValue];
 
         NSLocale *locale = [[NSLocale alloc] initWithLocaleIdentifier:language];
@@ -93,7 +93,6 @@
         AVAudioFormat *format = [inputNode outputFormatForBus:0];
   
         self.recognitionTask = [self.speechRecognizer recognitionTaskWithRequest:self.recognitionRequest resultHandler:^(SFSpeechRecognitionResult *result, NSError *error) {
-            [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
             if ( result ) {
                 
                 NSMutableArray *resultArray = [[NSMutableArray alloc] init];
@@ -137,6 +136,7 @@
             }
 
             if ( result.isFinal ) {
+                [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
                 NSLog(@"startListening() recognitionTask isFinal");
 
                 [self.audioEngine stop];
@@ -162,6 +162,7 @@
     {
         [self.timerCount removeObjectAtIndex:0];
     } else {
+        [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
         NSMutableArray *resultArray = [[NSMutableArray alloc] init];
         NSArray *timerParams = (NSArray*)[theTimer userInfo];
         [resultArray addObject:[timerParams objectAtIndex: 0]];
