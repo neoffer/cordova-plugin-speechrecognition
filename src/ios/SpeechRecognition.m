@@ -168,7 +168,7 @@
         [audioSession setActive:NO withOptions:AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation error:nil];
         [resultArray addObject:[timerParams objectAtIndex: 0]];
         [resultArray addObject:@"final"];
-        
+        [resultArray addObject:@"timeout"];
         NSArray *transcriptions = [NSArray arrayWithArray:resultArray];
 
         NSLog(@"startListening() handleTimer best result in array: %@", transcriptions.description);
