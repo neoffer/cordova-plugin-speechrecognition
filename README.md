@@ -10,7 +10,7 @@ This is a cordova plugin for Speech Recognition.
 ## Installation
 
 ```
-cordova plugin add cordova-plugin-speechrecognition
+cordova plugin add https://github.com/neoffer/cordova-plugin-speechrecognition.git
 ```
 
 ## Supported Platforms
